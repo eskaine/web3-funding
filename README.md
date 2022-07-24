@@ -1,1 +1,2 @@
-# web3-funding
+# Web3 Funding
+

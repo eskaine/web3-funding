@@ -1,0 +1,11 @@
+node_modules
+package.json
+.husky
+.gitignore
+.prettierignore
+.prettierrc
+.solhint.json
+.solhintignore
+README.md
+hardhat.config.js
+scripts
