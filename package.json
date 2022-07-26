@@ -7,7 +7,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "prepare": "husky install",
     "format": "prettier --write --ignore-unknown",
-    "lint:fix": "solhint 'contracts/**/*.sol' --fix",
+    "lint:fix": "solhint contracts/*.sol --fix",
     "compile": "npx hardhat compile"
   },
   "repository": {
@@ -32,10 +32,12 @@
     "hardhat-gas-reporter": "^1.0.8",
     "husky": "^8.0.1",
     "lint-staged": "^13.0.3",
-    "prettier": "2.7.1",
-    "prettier-plugin-solidity": "^1.0.0-dev.23"
+    "prettier": "^2.7.1",
+    "prettier-plugin-solidity": "^1.0.0-dev.23",
+    "solhint": "^3.3.7",
+    "solhint-plugin-prettier": "^0.0.5"
   },
   "lint-staged": {
-    "**/*": "solhint 'contracts/*.sol'"
+    "**/*": "solhint contracts/*.sol"
   }
 }
