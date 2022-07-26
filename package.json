@@ -7,7 +7,8 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "prepare": "husky install",
     "format": "prettier --write --ignore-unknown",
-    "lint:fix": "solhint 'contracts/**/*.sol' --fix"
+    "lint:fix": "solhint 'contracts/**/*.sol' --fix",
+    "compile": "npx hardhat compile"
   },
   "repository": {
     "type": "git",
@@ -21,8 +22,9 @@
   },
   "homepage": "https://github.com/eskaine/web3-funding#readme",
   "devDependencies": {
+    "@chainlink/contracts": "^0.4.1",
     "@nomicfoundation/hardhat-toolbox": "^1.0.2",
-    "@nomiclabs/hardhat-ethers": "^2.1.0",
+    "@nomiclabs/hardhat-ethers": "npm:hardhat-deploy-ethers@^0.3.0-beta.13",
     "@nomiclabs/hardhat-solhint": "^2.0.1",
     "dotenv": "^16.0.1",
     "ethers": "^5.6.9",
