@@ -6,6 +6,9 @@ import "./PriceConverter.sol";
 
 error Funding__NotOwner();
 
+/** @title Contract for crowd funding
+ *  @author eskaine
+ */
 contract Funding {
     using PriceConverter for uint256;
 

@@ -2,8 +2,6 @@ const { network } = require("hardhat");
 const { devChains } = require("../helper-hardhat-config");
 const { DECIMALS, INITIAL_ANSWER } = require("../helpers/networks.constant");
 
-console.log("run mocks");
-
 module.exports = async ({ getNamedAccounts, deployments }) => {
     const { deploy, log } = deployments;
     const { deployer } = await getNamedAccounts();

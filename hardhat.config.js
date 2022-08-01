@@ -1,11 +1,14 @@
-require("@nomicfoundation/hardhat-toolbox");
+require("@nomiclabs/hardhat-ethers");
 require("@nomiclabs/hardhat-solhint");
+require("@nomicfoundation/hardhat-toolbox");
+require("@nomicfoundation/hardhat-chai-matchers");
 require("dotenv").config();
 require("hardhat-deploy");
 
 const GOERLI_URL = process.env.GOERLI_URL || "";
 const PRIVATE_KEY = process.env.PRIVATE_KEY;
 const ETHERSCAN_API_KEY = process.env.ETHERSCAN_API_KEY || "";
+const COINMARKETCAP_API_KEY = process.env.COINMARKETCAP_API_KEY;
 
 module.exports = {
     solidity: {
@@ -25,6 +28,8 @@ module.exports = {
         currency: "USD",
         outputFile: "gas-report.txt",
         noColors: true,
+        coinmarketcap: COINMARKETCAP_API_KEY,
+        token: "MATIC",
     },
     etherscan: {
         apiKey: ETHERSCAN_API_KEY,
