@@ -4,85 +4,75 @@ pragma solidity ^0.8.0;
 import "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
 import "./PriceConverter.sol";
 
-error FundMe__NotOwner();
-
-/**@notice This contract is for creating a funding contract
- * @dev This implements price feeds as our library
- */
+error Funding__NotOwner();
 
 contract Funding {
     using PriceConverter for uint256;
 
     uint256 public constant MINIMUM_USD = 50 * 10**18;
-    address private immutable owner;
-    address[] private funders;
-    mapping(address => uint256) private addressToAmountFunded;
-    AggregatorV3Interface private priceFeed;
+    address private immutable _owner;
+    address[] private _funders;
+    mapping(address => uint256) private _addressToAmountFunded;
+    AggregatorV3Interface private _priceFeed;
 
     modifier onlyOwner() {
-        if (msg.sender != owner) revert FundMe__NotOwner();
+        if (msg.sender != _owner) revert Funding__NotOwner();
         _;
     }
 
     constructor(address priceFeed) {
-        priceFeed = AggregatorV3Interface(priceFeed);
-        owner = msg.sender;
+        _priceFeed = AggregatorV3Interface(priceFeed);
+        _owner = msg.sender;
     }
 
     function fund() public payable {
-        require(msg.value.getConversionRate(priceFeed) >= MINIMUM_USD, "You need to spend more ETH!");
+        require(msg.value.getConversionRate(_priceFeed) >= MINIMUM_USD, "You need to spend more ETH!");
 
-        addressToAmountFunded[msg.sender] += msg.value;
-        funders.push(msg.sender);
+        _addressToAmountFunded[msg.sender] += msg.value;
+        _funders.push(msg.sender);
     }
 
-    function withdraw() public payable onlyOwner {
+    function withdraw() public onlyOwner {
+        for (uint256 funderIndex = 0; funderIndex < _funders.length; funderIndex++) {
+            address funder = _funders[funderIndex];
+            _addressToAmountFunded[funder] = 0;
+        }
+        _funders = new address[](0);
+
+        (bool success, ) = _owner.call{value: address(this).balance}("");
+        require(success);
+    }
+
+    function cheaperWithdraw() public onlyOwner {
+        address[] memory funders = _funders;
+
         for (uint256 funderIndex = 0; funderIndex < funders.length; funderIndex++) {
             address funder = funders[funderIndex];
-            addressToAmountFunded[funder] = 0;
+            _addressToAmountFunded[funder] = 0;
         }
+        _funders = new address[](0);
 
-        funders = new address[](0);
-
-        (bool success, ) = owner.call{value: address(this).balance}("");
-        require(success, "Only owner may withdraw!");
+        (bool success, ) = _owner.call{value: address(this).balance}("");
+        require(success);
     }
 
-    function cheaperWithdraw() public payable onlyOwner {
-        address[] memory funders = funders;
-
-        for (uint256 funderIndex = 0; funderIndex < funders.length; funderIndex++) {
-            address funder = funders[funderIndex];
-            addressToAmountFunded[funder] = 0;
-        }
-
-        funders = new address[](0);
-
-        (bool success, ) = owner.call{value: address(this).balance}("");
-        require(success, "Only owner may withdraw!");
-    }
-
-    /** @notice Gets the amount that an address has funded
-     *  @param fundingAddress the address of the funder
-     *  @return the amount funded
-     */
     function getAddressToAmountFunded(address fundingAddress) public view returns (uint256) {
-        return addressToAmountFunded[fundingAddress];
+        return _addressToAmountFunded[fundingAddress];
     }
 
     function getVersion() public view returns (uint256) {
-        return priceFeed.version();
+        return _priceFeed.version();
     }
 
     function getFunder(uint256 index) public view returns (address) {
-        return funders[index];
+        return _funders[index];
     }
 
     function getOwner() public view returns (address) {
-        return owner;
+        return _owner;
     }
 
     function getPriceFeed() public view returns (AggregatorV3Interface) {
-        return priceFeed;
+        return _priceFeed;
     }
 }

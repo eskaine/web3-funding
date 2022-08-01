@@ -1,4 +1,4 @@
-import { NETWORKS } from "./helpers/networks.constant";
+const { NETWORKS } = require("./helpers/networks.constant");
 
 const networkConfig = {
     [NETWORKS.goerli]: {
@@ -7,6 +7,9 @@ const networkConfig = {
     },
 };
 
+const devChains = ["hardhat", "localhost"];
+
 module.exports = {
     networkConfig,
+    devChains,
 };
