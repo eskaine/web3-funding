@@ -13,69 +13,58 @@ contract Funding {
     using PriceConverter for uint256;
 
     uint256 public constant MINIMUM_USD = 50 * 10**18;
-    address private immutable _owner;
-    address[] private _funders;
-    mapping(address => uint256) private _addressToAmountFunded;
-    AggregatorV3Interface private _priceFeed;
+    address private immutable i_owner;
+    address[] private s_funders;
+    mapping(address => uint256) private s_addressToAmountFunded;
+    AggregatorV3Interface private s_priceFeed;
 
     modifier onlyOwner() {
-        if (msg.sender != _owner) revert Funding__NotOwner();
+        if (msg.sender != i_owner) revert Funding__NotOwner();
         _;
     }
 
     constructor(address priceFeed) {
-        _priceFeed = AggregatorV3Interface(priceFeed);
-        _owner = msg.sender;
+        s_priceFeed = AggregatorV3Interface(priceFeed);
+        i_owner = msg.sender;
     }
 
     function fund() public payable {
-        require(msg.value.getConversionRate(_priceFeed) >= MINIMUM_USD, "You need to spend more ETH!");
+        require(msg.value.getConversionRate(s_priceFeed) >= MINIMUM_USD, "You need to spend more ETH!");
 
-        _addressToAmountFunded[msg.sender] += msg.value;
-        _funders.push(msg.sender);
+        s_addressToAmountFunded[msg.sender] += msg.value;
+        s_funders.push(msg.sender);
     }
 
     function withdraw() public onlyOwner {
-        for (uint256 funderIndex = 0; funderIndex < _funders.length; funderIndex++) {
-            address funder = _funders[funderIndex];
-            _addressToAmountFunded[funder] = 0;
-        }
-        _funders = new address[](0);
-
-        (bool success, ) = _owner.call{value: address(this).balance}("");
-        require(success);
-    }
-
-    function cheaperWithdraw() public onlyOwner {
-        address[] memory funders = _funders;
+        address[] memory funders = s_funders;
 
         for (uint256 funderIndex = 0; funderIndex < funders.length; funderIndex++) {
             address funder = funders[funderIndex];
-            _addressToAmountFunded[funder] = 0;
+            s_addressToAmountFunded[funder] = 0;
         }
-        _funders = new address[](0);
+        s_funders = new address[](0);
 
-        (bool success, ) = _owner.call{value: address(this).balance}("");
+        (bool success, ) = i_owner.call{value: address(this).balance}("");
         require(success);
     }
 
     function getAddressToAmountFunded(address fundingAddress) public view returns (uint256) {
-        return _addressToAmountFunded[fundingAddress];
+        return s_addressToAmountFunded[fundingAddress];
     }
 
     function getVersion() public view returns (uint256) {
-        return _priceFeed.version();
+        return s_priceFeed.version();
     }
 
     function getFunder(uint256 index) public view returns (address) {
-        return _funders[index];
+        return s_funders[index];
     }
 
     function getOwner() public view returns (address) {
-        return _owner;
+        return i_owner;
     }
 
     function getPriceFeed() public view returns (AggregatorV3Interface) {
-        return _priceFeed;
+        return s_priceFeed;
     }
 }
