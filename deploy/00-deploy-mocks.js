@@ -1,5 +1,4 @@
 const { network } = require("hardhat");
-const { devChains } = require("../helper-hardhat-config");
 const { DECIMALS, INITIAL_ANSWER } = require("../helpers/networks.constant");
 
 module.exports = async ({ getNamedAccounts, deployments }) => {

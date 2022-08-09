@@ -4,9 +4,12 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "node": "npx hardhat node",
     "test": "npx hardhat test",
+    "test:goerli": "npx hardhat test --network goerli",
     "prepare": "husky install",
     "format": "prettier --write --ignore-unknown",
+    "lint": "solhint contracts/*.sol",
     "lint:fix": "solhint contracts/*.sol --fix",
     "compile": "npx hardhat compile",
     "deploy:mocks": "npx hardhat deploy --tags mocks",
